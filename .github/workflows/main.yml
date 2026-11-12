@@ -1,0 +1,49 @@
+name: Build REMK Smartphone APK v26.8 Pro
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-phone-apk:
+    name: Build REMK Smartphone APK (:app only v26.8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle 8.5
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Prepare and Compile Smartphone APK (:app)
+        shell: bash
+        run: |
+          APP_FILE=$(find . -name "build.gradle.kts" | grep "/app/" | head -n 1)
+          if [ -n "$APP_FILE" ]; then
+            cd "$(dirname "$(dirname "$APP_FILE")")"
+          fi
+          python3 -c 'q, nl = chr(34), chr(10); s = "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" + nl + "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" + nl + "rootProject.name = " + q + "REMK_Coaching_App" + q + nl + "include(" + q + ":app" + q + ")" + nl; open("settings.gradle.kts", "w", encoding="utf-8").write(s)'
+          python3 -c 'import os, base64; q = chr(34); os.makedirs("app/src/main/res/drawable", exist_ok=True); h = open("app/src/main/assets/index.html", encoding="utf-8").read() if os.path.exists("app/src/main/assets/index.html") else ""; tag = "base64,"; idx = h.find(tag); b64 = h[idx+7:h.find(q, idx+7)] if idx != -1 else ""; b64 and open("app/src/main/res/drawable/ic_launcher.png", "wb").write(base64.b64decode(b64))'
+          python3 -c 'import os, re; p = "app/src/main/assets/rezepte_teil4.js"; os.path.exists(p) and open(p, "w", encoding="utf-8").write(re.sub(r"\];\s*\];", "];", open(p, encoding="utf-8").read()))'
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          gradle :app:assembleDebug --no-daemon
+          mkdir -p "$GITHUB_WORKSPACE/phone_apk_out"
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/phone_apk_out/REMK-Smartphone-App-v26-8-Pro.apk"
+
+      - name: Upload Smartphone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: REMK-Smartphone-App-APK-v26-8-Pro
+          path: phone_apk_out/REMK-Smartphone-App-v26-8-Pro.apk
