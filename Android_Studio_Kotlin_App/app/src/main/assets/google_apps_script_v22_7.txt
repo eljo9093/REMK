@@ -1,0 +1,345 @@
+// ============================================================================
+// RE:MK GOOGLE APPS SCRIPT BACKEND v27.4 PRO (LOSSLESS 2-WAY CLOUD MERGE)
+// - Spalte A: Key/Passwort | Spalte B: Klarname | Spalte C: Status | Spalte D: Rolle
+// - Spalte F: Notizen | Spalte G: Geräte (max. 3, Watch zählt nie ins Limit!)
+// - Spalte H: Nickname | Spalte J: Wunsch-Passwort
+// - Spalte K: Cloud_Sync_Data (Verlustfreier Merge zwischen Watch & Smartphone!)
+// - Spalte L: Last_Sync
+// ============================================================================
+
+var MAX_DEVICES = 3;
+var ALLOW_FREE_CLOUD_SYNC = true;
+var GEMINI_API_KEY = ""; // Optional: Kostenlosen Gemini API-Key von aistudio.google.com eintragen
+
+function getLicenseSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ss.getSheetByName("Lizenzen") || ss.getSheets()[0];
+}
+
+function jsonOut(obj, callback) {
+  var txt = JSON.stringify(obj);
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + txt + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(txt)
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  return handleRemkRequest(e, null);
+}
+
+function doPost(e) {
+  var body = null;
+  try {
+    if (e && e.postData && e.postData.contents) {
+      body = JSON.parse(e.postData.contents);
+    }
+  } catch (err) {
+    body = null;
+  }
+  return handleRemkRequest(e, body);
+}
+
+function ensureSyncColumns(sheet) {
+  var headers = sheet.getRange(1, 1, 1, 12).getValues()[0];
+  if (!headers[7]) sheet.getRange(1, 8).setValue("Nickname");
+  if (!headers[9]) sheet.getRange(1, 10).setValue("Wunsch_Passwort");
+  if (!headers[10]) sheet.getRange(1, 11).setValue("Cloud_Sync_Data");
+  if (!headers[11]) sheet.getRange(1, 12).setValue("Last_Sync");
+}
+
+// Verlustfreier Merge zwischen Smartphone-Plan und Smartwatch-Offline-Queue
+function mergeCloudSyncPayloads(existingRawStr, incomingPayload) {
+  var existingObj = {};
+  try {
+    if (existingRawStr) existingObj = JSON.parse(existingRawStr);
+  } catch (e) {
+    existingObj = {};
+  }
+
+  var incomingObj = {};
+  try {
+    incomingObj = (typeof incomingPayload === "string") ? JSON.parse(incomingPayload) : (incomingPayload || {});
+  } catch (e) {
+    incomingObj = {};
+  }
+
+  var merged = {};
+  for (var k in existingObj) merged[k] = existingObj[k];
+  for (var k2 in incomingObj) merged[k2] = incomingObj[k2];
+
+  // Bewahre immer den aktuellsten Trainings-/Ernährungsplan der Haupt-App für die Uhr!
+  if (incomingObj.watchPlanCompactJson) {
+    merged.watchPlanCompactJson = incomingObj.watchPlanCompactJson;
+  } else if (existingObj.watchPlanCompactJson) {
+    merged.watchPlanCompactJson = existingObj.watchPlanCompactJson;
+  }
+
+  // Merge und dedupliziere alle Watch-Events anhand ihrer eindeutigen Event-ID
+  var oldQueue = Array.isArray(existingObj.eventsQueue) ? existingObj.eventsQueue : [];
+  var newQueue = Array.isArray(incomingObj.eventsQueue) ? incomingObj.eventsQueue : [];
+  var ackIds = Array.isArray(incomingObj.ackEventIds) ? incomingObj.ackEventIds : [];
+  var ackMap = {};
+  for (var a = 0; a < ackIds.length; a++) ackMap[String(ackIds[a])] = true;
+
+  var combinedMap = {};
+  var combinedList = [];
+
+  var allEvents = oldQueue.concat(newQueue);
+  for (var i = 0; i < allEvents.length; i++) {
+    var ev = allEvents[i];
+    if (!ev || !ev.id) continue;
+    var evId = String(ev.id);
+    if (ackMap[evId]) continue; // Bereits vom Smartphone bestätigt
+    if (!combinedMap[evId]) {
+      combinedMap[evId] = true;
+      combinedList.push(ev);
+    }
+  }
+
+  // Falls ein WATCH_SET_UNDO reinkam, entferne das zugehörige letzte Set-Event
+  if (combinedList.length > 100) {
+    combinedList = combinedList.slice(combinedList.length - 100);
+  }
+  merged.eventsQueue = combinedList;
+  delete merged.ackEventIds;
+
+  return JSON.stringify(merged);
+}
+
+function handleRemkRequest(e, postBody) {
+  try {
+    var params = (e && e.parameter) ? e.parameter : {};
+    var body = postBody || {};
+
+    var action = String(body.action || params.action || "verify").trim();
+    var callback = String(params.callback || "").trim();
+
+    if (action === "analyzePlatePhoto" || action === "analyzeFood") {
+      var imgB64 = String(body.imageBase64 || "");
+      var hint = String(body.voiceHint || "");
+      return jsonOut(analyzePlatePhotoWithGemini(imgB64, hint), callback);
+    }
+
+    var enteredUser = String(body.user || params.user || "").trim();
+    var enteredKey = String(body.key || body.licenseKey || params.key || "").trim();
+    var newKey = String(body.newKey || params.newKey || "").trim();
+    var newNickname = String(body.nickname || params.nickname || "").trim();
+    var deviceId = String(body.deviceId || params.deviceId || "UNKNOWN").trim();
+    var syncPayload = body.syncData || params.syncData || "";
+
+    if (!enteredKey) {
+      return jsonOut({ valid: false, message: "Bitte Lizenz-Key oder Passwort eingeben." }, callback);
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // Free-User Cloud- & Watch-Sync im eigenen Tabellenblatt "Free_Sync"
+    if (enteredKey.toUpperCase().indexOf("FREE-") === 0 || enteredKey.toUpperCase() === "FREE_USER") {
+      if (!ALLOW_FREE_CLOUD_SYNC) {
+        return jsonOut({ valid: false, message: "Cloud-Sync ist nur in der Pro-Version aktiv." }, callback);
+      }
+      return handleFreeSyncSheet(ss, enteredKey.toUpperCase(), action, syncPayload, callback);
+    }
+
+    var sheet = getLicenseSheet();
+    ensureSyncColumns(sheet);
+    var data = sheet.getDataRange().getValues();
+    var targetRow = -1;
+
+    for (var i = 1; i < data.length; i++) {
+      var rowKey = String(data[i][0] || "").trim();
+      var rowName = String(data[i][1] || "").trim();
+      var rowCustomPwd = String(data[i][9] || "").trim();
+      if (!rowKey && !rowName) continue;
+
+      var keyMatch = (rowKey.toLowerCase() === enteredKey.toLowerCase()) ||
+                     (rowCustomPwd && rowCustomPwd.toLowerCase() === enteredKey.toLowerCase());
+      if (keyMatch) {
+        targetRow = i;
+        break;
+      }
+    }
+
+    if (targetRow === -1) {
+      return jsonOut({ valid: false, message: "Ungültiger Key oder Passwort." }, callback);
+    }
+
+    var rowKeyVal = String(data[targetRow][0] || "").trim();
+    var rowNameVal = String(data[targetRow][1] || "Athlet").trim();
+    var rowStatus = String(data[targetRow][2] || "Aktiv").trim().toLowerCase();
+    var rowRole = String(data[targetRow][3] || "Kunde").trim();
+    var rowNotes = String(data[targetRow][5] || "").trim();
+    var rowDevicesRaw = String(data[targetRow][6] || "").trim();
+    var rowNickVal = String(data[targetRow][7] || "").trim();
+    var rowSyncJson = String(data[targetRow][10] || "").trim();
+    var rowLastSync = String(data[targetRow][11] || "").trim();
+
+    if (rowStatus === "gesperrt" || rowStatus === "inaktiv" || rowStatus === "beendet") {
+      return jsonOut({ valid: false, locked: true, message: "Zugang ist aktuell pausiert oder gesperrt." }, callback);
+    }
+
+    var isAdmin = rowRole.toLowerCase().indexOf("admin") !== -1 ||
+                  rowRole.toLowerCase().indexOf("trainer") !== -1 ||
+                  rowRole.toLowerCase().indexOf("tsv") !== -1 ||
+                  rowNameVal.toLowerCase().indexOf("jochen") !== -1;
+    var isWatch = deviceId.toUpperCase().indexOf("WATCH-") === 0;
+    var devices = rowDevicesRaw ? rowDevicesRaw.split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [];
+
+    // AKTION A: Geräte zurücksetzen
+    if (action === "resetDevices") {
+      devices = (deviceId && deviceId !== "UNKNOWN" && !isWatch) ? [deviceId] : [];
+      sheet.getRange(targetRow + 1, 7).setValue(devices.join(", "));
+      SpreadsheetApp.flush();
+      return jsonOut({ valid: true, user: rowNickVal || rowNameVal, role: rowRole, message: "Geräte zurückgesetzt!" }, callback);
+    }
+
+    // AKTION B: Erst-Login Nickname vergeben
+    if (action === "setFirstNickname") {
+      var chosenNick = newNickname || enteredUser;
+      if (!chosenNick || chosenNick.length < 3) {
+        return jsonOut({ valid: false, message: "Bitte wähle einen Nickname mit mindestens 3 Zeichen." }, callback);
+      }
+      for (var nIdx = 1; nIdx < data.length; nIdx++) {
+        if (nIdx === targetRow) continue;
+        var otherNick = String(data[nIdx][7] || "").trim().toLowerCase();
+        if (otherNick && otherNick === chosenNick.toLowerCase()) {
+          return jsonOut({ valid: false, message: "Dieser Nickname ist bereits vergeben." }, callback);
+        }
+      }
+      sheet.getRange(targetRow + 1, 8).setValue(chosenNick);
+      SpreadsheetApp.flush();
+      return jsonOut({ valid: true, user: chosenNick, role: rowRole, message: "Nickname gespeichert!" }, callback);
+    }
+
+    // AKTION C: Wunsch-Passwort ändern
+    if (action === "changePassword" && newKey.length >= 4) {
+      if (rowKeyVal && rowNotes.indexOf("Start-Key:") === -1) {
+        var nextNotes = rowNotes ? (rowNotes + " | Start-Key: " + rowKeyVal) : ("Start-Key: " + rowKeyVal);
+        sheet.getRange(targetRow + 1, 6).setValue(nextNotes);
+      }
+      sheet.getRange(targetRow + 1, 1).setValue(newKey);
+      sheet.getRange(targetRow + 1, 10).setValue(newKey);
+      SpreadsheetApp.flush();
+      return jsonOut({ valid: true, user: rowNickVal || rowNameVal, role: rowRole, message: "Passwort gespeichert!" }, callback);
+    }
+
+    // Geräte-Limit prüfen (Smartwatch WATCH-... belegt niemals einen der 3 Smartphone/PC-Slots!)
+    if (deviceId && deviceId !== "UNKNOWN" && !isWatch) {
+      if (devices.indexOf(deviceId) === -1) {
+        if (devices.length >= MAX_DEVICES && !isAdmin) {
+          return jsonOut({ valid: false, locked: true, limitReached: true, message: "Maximal 3 Geräte erreicht. Bitte Geräte zurücksetzen." }, callback);
+        }
+        if (devices.length >= MAX_DEVICES && isAdmin) devices.shift();
+        devices.push(deviceId);
+        sheet.getRange(targetRow + 1, 7).setValue(devices.join(", "));
+      }
+    }
+
+    // AKTION D: Verlustfreier Live-Sync Push (merged Watch-Queue & App-Plan in Spalte K & L)
+    if (action === "syncPush" && syncPayload) {
+      var nowIso = new Date().toISOString();
+      var mergedJsonStr = mergeCloudSyncPayloads(rowSyncJson, syncPayload);
+      sheet.getRange(targetRow + 1, 11).setValue(mergedJsonStr);
+      sheet.getRange(targetRow + 1, 12).setValue(nowIso);
+      SpreadsheetApp.flush();
+      return jsonOut({ valid: true, synced: true, lastSync: nowIso, user: rowNickVal || rowNameVal, role: rowRole }, callback);
+    }
+
+    // AKTION E: Live-Sync Pull (Watch oder App liest aus Spalte K & L)
+    if (action === "syncPull") {
+      var parsedSync = null;
+      try { parsedSync = rowSyncJson ? JSON.parse(rowSyncJson) : null; } catch (e) { parsedSync = rowSyncJson; }
+      return jsonOut({ valid: true, user: rowNickVal || rowNameVal, role: rowRole, syncData: parsedSync, lastSync: rowLastSync }, callback);
+    }
+
+    SpreadsheetApp.flush();
+    var loginSync = null;
+    try { loginSync = rowSyncJson ? JSON.parse(rowSyncJson) : null; } catch (e) {}
+    return jsonOut({
+      valid: true,
+      user: rowNickVal || rowNameVal,
+      realName: rowNameVal,
+      role: rowRole,
+      needsFirstSetup: (!isAdmin && rowNickVal === ""),
+      unlimitedDevices: isAdmin,
+      syncData: loginSync,
+      lastSync: rowLastSync
+    }, callback);
+
+  } catch (err) {
+    return jsonOut({ valid: false, message: "Serverfehler: " + err.toString() }, "");
+  }
+}
+
+function handleFreeSyncSheet(ss, freeKey, action, syncPayload, callback) {
+  var sh = ss.getSheetByName("Free_Sync");
+  if (!sh) {
+    sh = ss.insertSheet("Free_Sync");
+    sh.getRange(1, 1, 1, 4).setValues([["Free_ID", "Erstellt_am", "Cloud_Sync_Data", "Last_Sync"]]);
+  }
+  var data = sh.getDataRange().getValues();
+  var rowIdx = -1;
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0] || "").trim().toUpperCase() === freeKey) {
+      rowIdx = i;
+      break;
+    }
+  }
+  var nowIso = new Date().toISOString();
+
+  if (rowIdx === -1) {
+    var initJson = syncPayload ? mergeCloudSyncPayloads("", syncPayload) : "";
+    sh.appendRow([freeKey, nowIso.slice(0, 10), initJson, nowIso]);
+    SpreadsheetApp.flush();
+    return jsonOut({ valid: true, isFreeUser: true, synced: true, syncData: initJson ? JSON.parse(initJson) : null, lastSync: nowIso }, callback);
+  }
+  var existingRaw = String(data[rowIdx][2] || "").trim();
+  if (action === "syncPush" && syncPayload) {
+    var mergedFreeStr = mergeCloudSyncPayloads(existingRaw, syncPayload);
+    sh.getRange(rowIdx + 1, 3).setValue(mergedFreeStr);
+    sh.getRange(rowIdx + 1, 4).setValue(nowIso);
+    SpreadsheetApp.flush();
+    return jsonOut({ valid: true, isFreeUser: true, synced: true, lastSync: nowIso }, callback);
+  }
+  var savedObj = null;
+  try { savedObj = existingRaw ? JSON.parse(existingRaw) : null; } catch (e) {}
+  return jsonOut({ valid: true, isFreeUser: true, syncData: savedObj, lastSync: String(data[rowIdx][3] || "") }, callback);
+}
+
+function analyzePlatePhotoWithGemini(imageBase64, voiceHint) {
+  if (!GEMINI_API_KEY) {
+    return { status: "no_key", message: "Kein Gemini API-Key hinterlegt." };
+  }
+  try {
+    var cleanB64 = imageBase64.indexOf("base64,") !== -1 ? imageBase64.split("base64,")[1] : imageBase64;
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + GEMINI_API_KEY;
+    var promptText = "Du bist ein präziser deutscher Sporternährungs-Scanner. Analysiere dieses Essensfoto" +
+      (voiceHint ? (" (Hinweis des Nutzers: " + voiceHint + ")") : "") +
+      ". Erkenne exakt, was auf dem Teller liegt. Antworte NUR als reines JSON-Objekt im Format: " +
+      "{\"mealName\": \"Name des Gerichts auf Deutsch\", \"items\": [{\"name\": \"Zutat\", \"grams\": 150, \"kcal\": 45, \"protein\": 2, \"carbs\": 6, \"fat\": 1}]}";
+
+    var payload = {
+      contents: [{
+        parts: [
+          { text: promptText },
+          { inline_data: { mime_type: "image/jpeg", data: cleanB64 } }
+        ]
+      }],
+      generationConfig: { response_mime_type: "application/json" }
+    };
+    var res = UrlFetchApp.fetch(url, {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+    var parsed = JSON.parse(res.getContentText());
+    var rawJson = parsed.candidates[0].content.parts[0].text;
+    return { status: "ok", result: JSON.parse(rawJson) };
+  } catch (err) {
+    return { status: "error", message: err.toString() };
+  }
+}

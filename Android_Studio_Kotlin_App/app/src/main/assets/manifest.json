@@ -1,0 +1,101 @@
+{
+  "id": "./",
+  "name": "RE:MK Coaching & Training",
+  "short_name": "RE:MK",
+  "description": "Intelligentes All-in-One Coaching-System fuer Krafttraining, Ernaehrung, Einkaufsliste, Mobility und Vereins-Athletik.",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#0b0d12",
+  "theme_color": "#ff5e00",
+  "lang": "de-DE",
+  "dir": "ltr",
+  "categories": [
+    "fitness",
+    "health",
+    "sports",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "share_title",
+      "text": "share_text",
+      "url": "share_url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Training sofort starten",
+      "short_name": "Training",
+      "description": "Oeffnet direkt Satz 1 des heutigen Trainings",
+      "url": "./index.html?widget=workout",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Reine Einkaufsliste",
+      "short_name": "Einkauf",
+      "description": "Oeffnet die reine Supermarkt-Einkaufsliste",
+      "url": "./index.html?widget=shopping",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Heutige Mahlzeiten",
+      "short_name": "Ernaehrung",
+      "description": "Oeffnet direkt deine heutigen Rezepte",
+      "url": "./index.html?widget=nutrition",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

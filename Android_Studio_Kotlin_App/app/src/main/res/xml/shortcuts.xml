@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="workout_direct"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_media_play"
+        android:shortcutShortLabel="@string/shortcut_workout"
+        android:shortcutLongLabel="@string/shortcut_workout">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="eu.remk.coaching"
+            android:targetClass="eu.remk.coaching.MainActivity"
+            android:data="remk://app?widget=workout" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="shopping_direct"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:shortcutShortLabel="@string/shortcut_shopping"
+        android:shortcutLongLabel="@string/shortcut_shopping">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="eu.remk.coaching"
+            android:targetClass="eu.remk.coaching.MainActivity"
+            android:data="remk://app?widget=shopping" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="maps_direct"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:shortcutShortLabel="@string/shortcut_maps"
+        android:shortcutLongLabel="@string/shortcut_maps">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="eu.remk.coaching"
+            android:targetClass="eu.remk.coaching.MainActivity"
+            android:data="remk://app?widget=maps" />
+    </shortcut>
+</shortcuts>
