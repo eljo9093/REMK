@@ -1,0 +1,1528 @@
+/* ============================================================================
+   RE:MK v35.2 FINAL CLEAN UI MASTER STYLESHEET (remk-v34-clean-ui.css)
+   - 100% Single-UI ohne doppelte Alt-UI-Leisten (#remk-inplan-slot-switcher etc.)
+   - Kein doppeltes Menü mehr (Top-Bar frei für volle Profilnamen + Watch + Theme)
+   - 100% Fix für gestreckte Buttons (v31 48px-Override gezielt für Clean-UI bereinigt)
+   - 100% Fix für Kontrast (keine schwarze Schrift auf dunklen/grünen Buttons oder Modal-Pfeil!)
+   - Vollständiger Light-Mode (Standard) & Dark-Mode Support
+   ============================================================================ */
+
+:root {
+  --v34-bg: #f4f6f9;
+  --v34-card: #ffffff;
+  --v34-card-soft: #f8fafc;
+  --v34-border: #e2e8f0;
+  --v34-text: #0f172a;
+  --v34-muted: #64748b;
+  --v34-accent: #ff5e00;
+  --v34-sage: #5f9e8f;
+  --v34-dark-green: #0d4a29;
+  --v34-input-bg: #e5e7eb;
+  --v34-shadow: 0 6px 22px rgba(15, 23, 42, 0.06);
+}
+
+html.remk-v34-dark-html,
+body.remk-v34-dark {
+  --v34-bg: #0f131a;
+  --v34-card: #171d28;
+  --v34-card-soft: #1e2636;
+  --v34-border: #2a354b;
+  --v34-text: #f8fafc;
+  --v34-muted: #94a3b8;
+  --v34-input-bg: #232d40;
+  --v34-shadow: 0 8px 26px rgba(0, 0, 0, 0.38);
+}
+
+html {
+  overflow-x: clip !important;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100% !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+  background-color: var(--v34-bg) !important;
+  color: var(--v34-text) !important;
+}
+
+body {
+  display: block !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+  background-color: var(--v34-bg) !important;
+  color: var(--v34-text) !important;
+  padding-top: calc(66px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: 108px !important;
+}
+
+.remk-v230-slide-right,
+.remk-v230-slide-left {
+  animation: none !important;
+}
+
+/* ============================================================================
+   1. OBERE LEISTE (#remk-pinned-display-widget): SAUBER, OHNE DOPPELTES MENÜ
+   ============================================================================ */
+#remk-pinned-display-widget {
+  position: fixed !important;
+  top: max(6px, env(safe-area-inset-top)) !important;
+  bottom: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 16px) !important;
+  max-width: 560px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 48px !important;
+  padding: 4px 10px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  z-index: 99980 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.09) !important;
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease !important;
+}
+
+body.remk-v34-dark #remk-pinned-display-widget {
+  background: rgba(23, 29, 40, 0.97) !important;
+  border: 1px solid #2a354b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.42) !important;
+}
+
+#remk-pinned-display-widget.remk-topbar-scroll-hidden {
+  transform: translate(-50%, -155%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Doppelten Menü-Button oben ausblenden (Menü sitzt sauber im Bottom-Dock!) */
+#remk-pinned-display-widget > button[onclick*="openTopMenuDrawer"],
+#remk-pinned-display-widget > button.remk-pin-quick-btn.orange[onclick*="openTopMenuDrawer"],
+#remk-pinned-display-widget #remk-v34-top-menu-btn {
+  display: none !important;
+}
+
+/* Mehr Platz für volle Profilnamen in der Top-Bar */
+#remk-pinned-display-widget .remk-slim-user-switch {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+}
+#remk-pinned-display-widget .remk-slim-user-btn {
+  max-width: 145px !important;
+  padding: 5px 10px !important;
+  font-size: 0.78rem !important;
+}
+
+/* Bottom Dock immer sichtbar mit allen 5 klaren Tabs */
+#remk-ios-bottom-dock {
+  display: flex !important;
+  z-index: 99985 !important;
+}
+#remk-ios-bottom-dock button {
+  display: flex !important;
+}
+
+/* ============================================================================
+   2. 100% AUSBLENDUNG ALLER ALTEN & DOPPELTEN UI-CONTAINER (SINGLE-UI!)
+   ============================================================================ */
+html.remk-session-unlocked .container > header,
+body.remk-v34-active .container > header,
+#remk-inplan-slot-switcher,
+body.remk-clean-workout-v198 #remk-inplan-slot-switcher,
+#remk-v230-onescreen-app-shell,
+#remk-home-pane-planer > #remk-v230-onescreen-app-shell,
+#remk-home-pane-planer > .step-header,
+#remk-home-pane-planer > .mode-selection-grid,
+#remk-home-pane-planer > .input-group,
+#remk-home-pane-planer > #last-plan-resume-banner,
+#step-1 > .step-header,
+#step-1 > .mode-selection-grid,
+#step-1 > .input-group,
+#step-1 > #last-plan-resume-banner,
+#remk-home-dual-tabs-bar {
+  display: none !important;
+}
+
+/* Fitness-Modus: Zeige AUSSCHLIESSLICH #remk-v34-fitness-clean-panel in #result-box */
+body.remk-v34-in-workout #result-box > :not(#remk-v34-fitness-clean-panel),
+body.remk-v34-in-workout #remk-today-training-overview-card,
+body.remk-v34-in-workout #remk-pro-focus-container,
+body.remk-v34-in-workout #remk-rest-timer-widget,
+body.remk-v34-in-workout #remk-app-top-subnav,
+body.remk-v34-in-workout #remk-v237-active-tile-bar,
+body.remk-v34-in-workout #remk-v31-lobby-segmented-bar,
+body.remk-v34-in-workout #remk-v31-focus-drawer-bar,
+body.remk-v34-in-workout #remk-v217-lobby-content-wrap,
+body.remk-v34-in-workout #remk-v255-lobby-env-bar,
+body.remk-v34-in-workout #remk-v34-nutri-clean-panel {
+  display: none !important;
+}
+body.remk-v34-in-workout #remk-v34-fitness-clean-panel {
+  display: block !important;
+}
+body:not(.remk-v34-in-workout) #remk-v34-fitness-clean-panel {
+  display: none !important;
+}
+
+/* Ernährungs-Modus: Zeige AUSSCHLIESSLICH #remk-v34-nutri-clean-panel (KEINE Alt-UI-Dopplung mehr!) */
+body.remk-v34-in-nutrition #result-box > :not(#remk-v34-nutri-clean-panel),
+body.remk-v34-in-nutrition #remk-pro-nutri-container,
+body.remk-v34-in-nutrition #remk-v236-clean-cooking-studio,
+body.remk-v34-in-nutrition #remk-v269-yazio-diary-container,
+body.remk-v34-in-nutrition #remk-v269-nutri-mode-switch,
+body.remk-v34-in-nutrition #remk-v248-nutri-ring-card,
+body.remk-v34-in-nutrition #remk-v234-single-nutri-cockpit,
+body.remk-v34-in-nutrition #remk-v237-active-tile-bar,
+body.remk-v34-in-nutrition #remk-nutri-day-tabs,
+body.remk-v34-in-nutrition #remk-app-top-subnav,
+body.remk-v34-in-nutrition #remk-rest-timer-widget,
+body.remk-v34-in-nutrition #remk-v34-fitness-clean-panel {
+  display: none !important;
+}
+body.remk-v34-in-nutrition #remk-v34-nutri-clean-panel {
+  display: block !important;
+}
+body:not(.remk-v34-in-nutrition) #remk-v34-nutri-clean-panel {
+  display: none !important;
+}
+
+/* ============================================================================
+   3. RESET GEGEN ALT-V31 48PX-BUTTON-STRECKUNG & LIGHT-MODE SCHWARZTEXT-BUG!
+   ============================================================================ */
+#remk-v34-start-hub button,
+#remk-v34-fitness-clean-panel button,
+#remk-v34-nutri-clean-panel button,
+#remk-v34-recipe-modal button,
+#remk-v34-warmup-modal button {
+  min-height: unset !important;
+  padding: 0;
+  font-size: inherit;
+  border-radius: 12px;
+  touch-action: manipulation;
+  box-sizing: border-box;
+}
+
+/* Klare Kontrast-Button-Klassen (NIEMALS von [style*="color:#fff"] überschreibbar!) */
+.v34-btn-dark-green {
+  background: #0d4a29 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+  font-size: 0.82rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+}
+.v34-btn-sage {
+  background: #5f9e8f !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 12px 16px !important;
+  font-size: 0.92rem !important;
+  font-weight: 900 !important;
+  cursor: pointer;
+}
+.v34-btn-orange {
+  background: linear-gradient(135deg, #ff5e00 0%, #ea580c 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+}
+.v34-btn-blue {
+  background: #0ea5e9 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+}
+.v34-btn-emerald {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+}
+.v34-btn-soft {
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+  border: 1px solid var(--v34-border) !important;
+  cursor: pointer;
+}
+
+/* ============================================================================
+   4. START-HUB ("Was möchtest du heute generieren?")
+   ============================================================================ */
+#remk-v34-start-hub {
+  width: 100%;
+  max-width: 520px;
+  margin: 4px auto 18px auto;
+  text-align: left;
+  color: var(--v34-text);
+  display: block !important;
+}
+.v34-hello-card {
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--v34-shadow);
+  margin-bottom: 14px;
+}
+.v34-kcal-badge {
+  background: rgba(255, 94, 0, 0.11);
+  border: 1.5px solid rgba(255, 94, 0, 0.45);
+  color: #ea580c !important;
+  font-weight: 900;
+  font-size: 0.84rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.v34-2x2-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 10px 0 14px 0;
+}
+.v34-mode-tile {
+  background: var(--v34-card);
+  border: 2px solid var(--v34-border);
+  border-radius: 22px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--v34-shadow);
+  color: var(--v34-text);
+  font-weight: 800;
+  font-size: 0.94rem;
+  text-align: center;
+  transition: border-color 0.16s ease, transform 0.12s ease;
+}
+.v34-mode-tile:active { transform: scale(0.98); }
+.v34-mode-tile.active {
+  background: rgba(255, 94, 0, 0.1) !important;
+  border: 2.5px solid #ff5e00 !important;
+  box-shadow: 0 8px 20px rgba(255, 94, 0, 0.18) !important;
+}
+.v34-primary-cta {
+  width: 100%;
+  height: 52px !important;
+  border: none !important;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #ff5e00 0%, #ea580c 100%) !important;
+  color: #ffffff !important;
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(255, 94, 0, 0.28);
+  margin-bottom: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px !important;
+}
+.v34-presets-strip {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 2px 0 10px 0;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y !important;
+}
+.v34-presets-strip::-webkit-scrollbar { display: none; }
+.v34-preset-chip {
+  background: var(--v34-card) !important;
+  border: 1px solid var(--v34-border) !important;
+  color: var(--v34-text) !important;
+  border-radius: 999px !important;
+  padding: 7px 12px !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.v34-preset-chip.active-chip {
+  background: #ff5e00 !important;
+  border-color: #ff5e00 !important;
+  color: #ffffff !important;
+}
+
+/* ============================================================================
+   5. FITNESS CLEAN-UI (#remk-v34-fitness-clean-panel)
+   ============================================================================ */
+#remk-v34-fitness-clean-panel {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto 18px auto;
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 26px;
+  padding: 15px 13px 18px 13px;
+  box-shadow: var(--v34-shadow);
+  text-align: left;
+  color: var(--v34-text);
+}
+.v34-fit-subtabs,
+.v34-nutri-subtabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  background: var(--v34-card-soft);
+  border: 1px solid var(--v34-border);
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+}
+.v34-fit-subtab,
+.v34-nutri-subtab {
+  border: none !important;
+  background: transparent !important;
+  color: var(--v34-muted) !important;
+  font-weight: 800 !important;
+  font-size: 0.76rem !important;
+  padding: 9px 4px !important;
+  border-radius: 10px !important;
+  cursor: pointer;
+}
+.v34-fit-subtab.active,
+.v34-nutri-subtab.active {
+  background: var(--v34-card) !important;
+  color: var(--v34-text) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1) !important;
+}
+.v34-day-pill {
+  padding: 6px 11px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--v34-border) !important;
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.v34-day-pill.active-day {
+  background: #ff5e00 !important;
+  border-color: #ff5e00 !important;
+  color: #ffffff !important;
+}
+.v34-compact-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  align-items: center;
+  padding: 2px 0 10px 0;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y !important;
+}
+.v34-compact-strip::-webkit-scrollbar { display: none; }
+.v34-ex-thumb-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 10px 0;
+  touch-action: pan-x pan-y !important;
+  scrollbar-width: none;
+}
+.v34-ex-thumb-strip::-webkit-scrollbar { display: none; }
+.v34-ex-thumb-card {
+  width: 66px;
+  height: 66px;
+  border-radius: 14px;
+  background: var(--v34-card-soft);
+  border: 1.5px solid var(--v34-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  padding: 4px;
+}
+.v34-ex-thumb-card.active {
+  border: 2px solid #0f172a;
+  background: var(--v34-card);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+body.remk-v34-dark .v34-ex-thumb-card.active {
+  border-color: #ff5e00;
+}
+.v34-ex-thumb-card.done::after {
+  content: "✓";
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.v34-action-pills-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 12px 0;
+  touch-action: pan-x pan-y !important;
+  scrollbar-width: none;
+}
+.v34-action-pills-row::-webkit-scrollbar { display: none; }
+.v34-gray-pill {
+  background: var(--v34-card-soft) !important;
+  border: 1px solid var(--v34-border) !important;
+  color: var(--v34-text) !important;
+  border-radius: 999px !important;
+  padding: 7px 11px !important;
+  font-size: 0.74rem !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.v34-gray-pill.active-pill {
+  background: rgba(255, 94, 0, 0.14) !important;
+  border-color: #ff5e00 !important;
+  color: #ea580c !important;
+}
+.v34-sets-header {
+  display: grid;
+  grid-template-columns: 34px 1.25fr 1fr 1fr 38px;
+  gap: 7px;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--v34-muted);
+  padding: 0 4px 6px 4px;
+  text-align: center;
+}
+.v34-set-row {
+  display: grid;
+  grid-template-columns: 34px 1.25fr 1fr 1fr 38px;
+  gap: 7px;
+  align-items: center;
+  padding: 6px 4px;
+  border-radius: 14px;
+  margin-bottom: 4px;
+}
+.v34-set-row.done-row {
+  background: rgba(16, 185, 129, 0.13);
+}
+.v34-set-num-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--v34-input-bg);
+  color: var(--v34-text);
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+.v34-set-row.done-row .v34-set-num-circle {
+  background: #10b981;
+  color: #ffffff;
+}
+.v34-set-pill-input {
+  width: 100% !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  background: var(--v34-input-bg) !important;
+  border: 2px solid transparent !important;
+  color: var(--v34-text) !important;
+  font-weight: 800 !important;
+  font-size: 0.92rem !important;
+  text-align: center !important;
+  padding: 2px 4px !important;
+  box-sizing: border-box !important;
+}
+.v34-set-pill-input:focus,
+.v34-set-pill-input.active-cell {
+  background: var(--v34-card) !important;
+  border-color: #0f172a !important;
+  outline: none !important;
+}
+body.remk-v34-dark .v34-set-pill-input:focus,
+body.remk-v34-dark .v34-set-pill-input.active-cell {
+  border-color: #ff5e00 !important;
+}
+/* EXAKTE 32×32 QUADRATISCHE CHECKBOX (NICHT MEHR GESTRECKT!) */
+.v34-set-check-box {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  border: 2px solid var(--v34-muted) !important;
+  background: var(--v34-card) !important;
+  color: transparent !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 auto;
+  font-weight: 900 !important;
+  font-size: 0.92rem !important;
+  line-height: 1 !important;
+}
+.v34-set-check-box.checked {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+}
+body.remk-v34-dark .v34-set-check-box.checked {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+.v34-numpad-dock {
+  margin-top: 12px;
+  background: var(--v34-card-soft);
+  border: 1px solid var(--v34-border);
+  border-radius: 22px;
+  padding: 12px 10px;
+}
+.v34-rir-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+}
+/* EXAKTE 32×32 KREISRUNDE RIR-PUNKTE (KEINE VERTIKALEN BALKEN MEHR!) */
+.v34-rir-dot {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 0.76rem !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1 !important;
+}
+.v34-rir-dot.active-rir {
+  transform: scale(1.16);
+  box-shadow: 0 0 0 2.5px var(--v34-text);
+}
+.v34-numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.v34-num-key {
+  height: 44px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--v34-text) !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+}
+.v34-num-key:active { background: var(--v34-input-bg) !important; }
+.v34-num-action {
+  height: 44px !important;
+  border-radius: 999px !important;
+  border: none !important;
+  background: var(--v34-input-bg) !important;
+  color: var(--v34-text) !important;
+  font-size: 0.8rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  padding: 0 6px !important;
+}
+.v34-num-check {
+  height: 44px !important;
+  border-radius: 999px !important;
+  border: none !important;
+  background: #0f172a !important;
+  color: #ffffff !important;
+  font-size: 1.1rem !important;
+  font-weight: 900 !important;
+  cursor: pointer;
+}
+body.remk-v34-dark .v34-num-check {
+  background: #ff5e00 !important;
+}
+
+/* ============================================================================
+   6. NEUES ERNÄHRUNGS-COCKPIT (#remk-v34-nutri-clean-panel)
+   ============================================================================ */
+#remk-v34-nutri-clean-panel {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto 20px auto;
+  text-align: left;
+  color: var(--v34-text);
+}
+.v34-nutri-card {
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 22px;
+  padding: 15px;
+  box-shadow: var(--v34-shadow);
+  margin-bottom: 12px;
+}
+.v34-day-arrow-btn {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--v34-border) !important;
+  background: var(--v34-card) !important;
+  color: var(--v34-text) !important;
+  font-weight: 900 !important;
+  font-size: 1.15rem !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.v34-water-btn {
+  height: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+  font-size: 0.76rem !important;
+  font-weight: 900 !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.v34-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.v34-tool-btn {
+  background: var(--v34-card-soft) !important;
+  border: 1px solid var(--v34-border) !important;
+  border-radius: 14px !important;
+  padding: 11px 10px !important;
+  color: var(--v34-text) !important;
+  font-size: 0.77rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  gap: 7px;
+  text-align: left;
+}
+.v34-tool-btn:active { transform: scale(0.98); }
+
+.v34-day-tiles-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin: 10px 0 14px 0;
+}
+.v34-day-tile {
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 14px;
+  padding: 9px 2px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--v34-text);
+}
+.v34-day-tile.active {
+  background: #5f9e8f !important;
+  border-color: #5f9e8f !important;
+  color: #ffffff !important;
+}
+.v34-day-tile.active span {
+  color: #ffffff !important;
+}
+.v34-meal-card {
+  background: var(--v34-card);
+  border-radius: 18px;
+  margin-bottom: 11px;
+  box-shadow: var(--v34-shadow);
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1.5px solid var(--v34-border);
+}
+.v34-meal-eaten-left {
+  width: 68px;
+  background: #5f9e8f;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.85rem;
+  flex-shrink: 0;
+}
+.v34-meal-body {
+  flex: 1;
+  padding: 12px 12px;
+  min-width: 0;
+}
+.v34-meal-tag {
+  display: inline-block;
+  border: 1.2px solid var(--v34-muted);
+  color: var(--v34-text);
+  border-radius: 8px;
+  padding: 2px 7px;
+  font-size: 0.69rem;
+  font-weight: 700;
+  margin: 0 5px 4px 0;
+}
+.v34-meal-score-col {
+  width: 74px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-right: 10px;
+  flex-shrink: 0;
+}
+.v34-shop-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--v34-card-soft);
+  border: 1px solid var(--v34-border);
+  margin-bottom: 7px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--v34-text);
+  line-height: 1.35;
+}
+.v34-shop-row.checked {
+  opacity: 0.55;
+  text-decoration: line-through;
+  border-color: #10b981;
+}
+
+/* ============================================================================
+   7. VOLLBILD-TELLER-MODAL & WARMUP-MODAL (KLARER ZURÜCK-BUTTON + SWIPE!)
+   ============================================================================ */
+#remk-v34-recipe-modal,
+#remk-v34-warmup-modal {
+  display: none;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2000600 !important;
+  background: var(--v34-card) !important;
+  color: var(--v34-text) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: 96px !important;
+  transition: transform 0.2s ease-out;
+}
+.v34-recipe-hero {
+  background: radial-gradient(circle at center, #263e3c 0%, #112221 100%);
+  height: 215px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* KRISTALLKLARER WEISSER ZURÜCK-BUTTON (NIEMALS MEHR EIN SCHWARZER PUNKT!) */
+.v34-modal-back-btn {
+  position: absolute !important;
+  left: 14px !important;
+  top: max(16px, env(safe-area-inset-top)) !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 8px 14px !important;
+  font-size: 0.86rem !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32) !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+}
+.v34-modal-fav-btn {
+  position: absolute !important;
+  right: 14px !important;
+  top: max(16px, env(safe-area-inset-top)) !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 38px !important;
+  height: 38px !important;
+  font-size: 1.15rem !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32) !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.v34-plate-bowl {
+  width: 146px;
+  height: 146px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #374151 0%, #1f2937 85%);
+  border: 4px solid #4b5563;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.v34-plate-food-inner {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #ff7a29 0%, #ea580c 70%, #9a3412 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.9rem;
+}
+/* ============================================================================
+   8. RE:MK v35.0 CLEAN-UI UPGRADES (MODAL Z-INDEX, 1-SEITEN-EINKAUF, SAFE PADDING)
+   ============================================================================ */
+#remk-v238-hybrid-food-modal,
+#remk-custom-recipe-modal,
+#remk-fridge-rescuer-modal,
+#remk-v197-recipe-picker-modal,
+#remk-v228-partner-sync-modal,
+#remk-share-export-hub-modal,
+#remk-v234-gear-picker-modal,
+#remk-v272-live-camera-modal,
+#remk-anamnese-modal,
+#remk-qr-video-modal,
+#remk-profile-settings-modal,
+#remk-legal-modal {
+  z-index: 2000750 !important;
+}
+
+#remk-v34-recipe-modal,
+#remk-v34-warmup-modal {
+  padding-bottom: calc(132px + env(safe-area-inset-bottom, 16px)) !important;
+}
+
+.v35-shop-mode-row {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 10px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.v35-shop-mode-row::-webkit-scrollbar { display: none; }
+
+.v35-shop-cat-head {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #059669;
+  margin: 12px 0 6px 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+body.remk-v34-dark .v35-shop-cat-head {
+  color: #34d399;
+}
+.v35-shop-stage-banner {
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 10px;
+  margin: 10px 0 6px 0;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+}
+body.remk-v34-dark .v35-shop-stage-banner {
+  color: #6ee7b7;
+}
+.v35-shop-compact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+@media (min-width: 440px) {
+  .v35-shop-compact-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.v34-shop-row {
+  padding: 8px 10px !important;
+  margin-bottom: 0 !important;
+  font-size: 0.81rem !important;
+  gap: 8px !important;
+}
+.v35-doc-action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.v35-doc-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  padding: 7px 9px !important;
+  border-radius: 10px !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+  border: 1px solid var(--v34-border) !important;
+  cursor: pointer;
+}
+.v35-doc-btn.accent {
+  color: #059669 !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  background: rgba(16, 185, 129, 0.09) !important;
+}
+body.remk-v34-dark .v35-doc-btn.accent {
+  color: #34d399 !important;
+}
+/* ============================================================================
+   9. RE:MK v35.2 CLEAN-UI (4-TAB ERNÄHRUNG, INLINE-NOTIZEN, EINKAUF, REZEPTE, TOAST)
+   ============================================================================ */
+.v34-nutri-subtabs.v351-tabs-4 {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+}
+.v34-nutri-subtabs.v351-tabs-4 .v34-nutri-subtab {
+  font-size: 0.72rem !important;
+  padding: 9px 2px !important;
+  white-space: nowrap;
+}
+
+.v351-quick-track-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.v351-quick-track-btn {
+  background: var(--v34-card-soft) !important;
+  border: 1px solid var(--v34-border) !important;
+  border-radius: 14px !important;
+  padding: 10px 6px !important;
+  color: var(--v34-text) !important;
+  font-size: 0.73rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  line-height: 1.2;
+}
+.v351-quick-track-btn:active { transform: scale(0.97); }
+
+.v351-api-status-pill {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px !important;
+  border-radius: 999px !important;
+  font-size: 0.71rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  border: 1px solid var(--v34-border) !important;
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+}
+.v351-api-status-pill.ok {
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  color: #059669 !important;
+}
+body.remk-v34-dark .v351-api-status-pill.ok {
+  color: #34d399 !important;
+}
+.v351-api-status-pill.warn {
+  background: rgba(245, 158, 11, 0.14) !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  color: #b45309 !important;
+}
+body.remk-v34-dark .v351-api-status-pill.warn {
+  color: #fbbf24 !important;
+}
+
+.v351-shop-cat-card {
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 18px;
+  padding: 12px 13px;
+  margin-bottom: 10px;
+  box-shadow: var(--v34-shadow);
+}
+.v351-shop-add-bar {
+  display: flex;
+  gap: 7px;
+  margin-top: 10px;
+}
+.v351-shop-add-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--v34-border) !important;
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+  font-size: 0.83rem !important;
+  font-weight: 600 !important;
+}
+
+.v351-ex-inline-note-box {
+  background: rgba(255, 94, 0, 0.06);
+  border: 1px solid rgba(255, 94, 0, 0.28);
+  border-radius: 14px;
+  padding: 8px 10px;
+  margin: 6px 0 9px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+body.remk-v34-dark .v351-ex-inline-note-box {
+  background: rgba(255, 94, 0, 0.1);
+  border-color: rgba(255, 94, 0, 0.35);
+}
+.v351-ex-inline-note-input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  background: transparent !important;
+  color: var(--v34-text) !important;
+  font-size: 0.79rem !important;
+  font-weight: 700 !important;
+  padding: 2px 0 !important;
+  outline: none !important;
+}
+.v351-ex-inline-note-input::placeholder {
+  color: var(--v34-muted);
+  font-weight: 600;
+}
+
+.v351-muscle-tempo-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  margin: 4px 0 6px 0;
+}
+.v351-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.69rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--v34-card-soft);
+  border: 1px solid var(--v34-border);
+  color: var(--v34-muted);
+}
+.v351-meta-chip.muscle {
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.32);
+  background: rgba(16, 185, 129, 0.09);
+}
+body.remk-v34-dark .v351-meta-chip.muscle {
+  color: #34d399;
+}
+.v351-meta-chip.superset {
+  color: #ea580c;
+  border-color: rgba(255, 94, 0, 0.42);
+  background: rgba(255, 94, 0, 0.12);
+}
+
+.v351-sticky-search-card {
+  position: sticky;
+  top: calc(62px + env(safe-area-inset-top, 0px));
+  z-index: 40;
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 20px;
+  padding: 12px 13px 8px 13px;
+  box-shadow: var(--v34-shadow);
+  margin-bottom: 12px;
+}
+
+#remk-v351-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(20px);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  z-index: 2000900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+#remk-v351-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+body.remk-v34-dark #remk-v351-toast {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+#remk-v234-gear-modal,
+#remk-v250-watch-gear-modal,
+#remk-v202-note-modal,
+#remk-v247-widgets-modal,
+#remk-v245-gps-modal,
+#remk-v255-flex-env-modal,
+#remk-v290-wod-modal,
+#remk-workout-history-modal,
+#qr-video-modal {
+  z-index: 2000750 !important;
+}
+
+
+/* ============================================================================
+   RE:MK v35.2 – STABILE TOPBAR, PIN-FUNKTION, TELLER-TAUSCH, ANATOMIE & CLEAN COCKPIT
+   ============================================================================ */
+
+/* FIX #3: Konkurrierende Legacy-Leisten 100% ausblenden -> Topbar tauscht sich NIEMALS aus! */
+#remk-solid-page-navbar,
+#header-top-clean-bar,
+#remk-global-partner-header-bar,
+#remk-inplan-slot-switcher,
+.remk-partner-bar-instance,
+#remk-v229-top-sync-btn,
+#remk-v229-top-exp-switch,
+#remk-v290-top-wod-btn {
+  display: none !important;
+}
+
+#remk-pinned-display-widget,
+#remk-pinned-display-widget.remk-topbar-scroll-hidden {
+  transform: translate(-50%, 0) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* FIX #2: Pin-Buttons & Thumb-Badge */
+.v34-ex-thumb-card {
+  position: relative !important;
+}
+.v34-ex-thumb-card.pinned {
+  border-color: rgba(245, 158, 11, 0.72) !important;
+}
+.v352-thumb-pin-badge {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 0.65rem;
+  line-height: 1;
+}
+.v352-pin-toggle-btn {
+  border: 1px solid var(--v34-border);
+  background: var(--v34-card-soft);
+  color: var(--v34-text);
+  border-radius: 10px;
+  padding: 5px 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.16s ease;
+}
+.v352-pin-toggle-btn.is-pinned {
+  background: rgba(245, 158, 11, 0.18) !important;
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+}
+.v352-seat-pin-btn {
+  border: 1px solid var(--v34-border);
+  background: var(--v34-card);
+  color: var(--v34-text);
+  border-radius: 9px;
+  padding: 5px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.v351-meta-chip.v352-sec-chip {
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* FIX #4: Direkter 1-Tap Teller-Tausch Button auf jeder Mahlzeiten-Karte */
+.v352-plate-swap-btn {
+  border: 1px solid rgba(255, 94, 0, 0.42);
+  background: rgba(255, 94, 0, 0.12);
+  color: #ff5e00;
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.v352-plate-mini-btn {
+  border: 1px solid var(--v34-border);
+  background: var(--v34-card-soft);
+  color: var(--v34-text);
+  border-radius: 10px;
+  padding: 5px 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* FIX #6A: Anatomie-Karte im Clean-UI */
+.v352-anatomy-panel-box {
+  background: var(--v34-card);
+  border: 1px solid var(--v34-border);
+  border-radius: 18px;
+  padding: 12px;
+  margin: 8px 0 12px 0;
+  box-shadow: var(--v34-shadow);
+}
+
+/* FIX #6B: COCKPIT KOMPLETT IM NEUEN CLEAN-UI-DESIGN (DARK & LIGHT MODE) */
+#remk-home-pane-cockpit {
+  max-width: 520px !important;
+  margin: 0 auto !important;
+  padding: 4px 0 96px 0 !important;
+  color: var(--v34-text) !important;
+}
+
+#remk-home-pane-cockpit .input-group,
+#remk-home-pane-cockpit .remk-cockpit-card,
+#remk-home-pane-cockpit #remk-v207-cockpit-indizes-anatomy-radar > div,
+#remk-home-pane-cockpit #remk-v223-muscle-summary-table-card {
+  background: var(--v34-card) !important;
+  border: 1px solid var(--v34-border) !important;
+  border-top: 1px solid var(--v34-border) !important;
+  border-radius: 20px !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+  box-shadow: var(--v34-shadow) !important;
+  color: var(--v34-text) !important;
+}
+
+/* Cockpit Sub-Tabs im exakten Pill-Design wie Ernährung (Heute | Plan | Einkauf) */
+#remk-home-pane-cockpit .remk-cockpit-subtabs,
+#remk-home-pane-cockpit > div:first-child {
+  border-radius: 16px !important;
+}
+
+#remk-home-pane-cockpit button[onclick*="switchCockpitSubTab"] {
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+  font-size: 0.78rem !important;
+  transition: all 0.16s ease !important;
+}
+
+#remk-home-pane-cockpit input[type="text"],
+#remk-home-pane-cockpit input[type="number"],
+#remk-home-pane-cockpit select,
+#remk-home-pane-cockpit textarea {
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+  border: 1px solid var(--v34-border) !important;
+  border-radius: 12px !important;
+  padding: 10px 12px !important;
+  font-weight: 700 !important;
+}
+
+#remk-home-pane-cockpit .remk-svg-body-box {
+  background: var(--v34-card-soft) !important;
+  border: 1px solid var(--v34-border) !important;
+  border-radius: 18px !important;
+  padding: 12px !important;
+}
+
+#remk-home-pane-cockpit .remk-muscle-chip {
+  background: var(--v34-card-soft) !important;
+  color: var(--v34-text) !important;
+  border: 1px solid var(--v34-border) !important;
+  border-radius: 12px !important;
+  padding: 7px 10px !important;
+  font-weight: 800 !important;
+  font-size: 0.74rem !important;
+}
+
+#remk-home-pane-cockpit .remk-muscle-chip.active {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: rgba(239, 68, 68, 0.65) !important;
+  color: #f87171 !important;
+}
+
+#remk-home-pane-cockpit .remk-muscle-chip.has-val:not(.active) {
+  border-color: rgba(59, 130, 246, 0.45) !important;
+}
+
+body.remk-light-mode #remk-home-pane-cockpit,
+body:not(.remk-v34-dark) #remk-home-pane-cockpit {
+  color: #0f172a !important;
+}
+body.remk-light-mode #remk-home-pane-cockpit .remk-muscle-chip.active,
+body:not(.remk-v34-dark) #remk-home-pane-cockpit .remk-muscle-chip.active {
+  color: #dc2626 !important;
+}
+
+/* ============================================================================
+   RE:MK v35.4 – PERFORMANCE, ANATOMIE-TOOLBAR & CLEAN-SHEET FIXES
+   ============================================================================ */
+.remk-anat-toolbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  margin-bottom: 8px !important;
+}
+.remk-anat-pill-btn {
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 5px 9px !important;
+  font-size: 0.71rem !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  white-space: nowrap !important;
+}
+.v34-ex-thumb-card {
+  min-width: 68px !important;
+  padding: 6px 4px !important;
+}
+
+/* RE:MK v35.5 – Pure KI-Comic Exercise Thumbs & Set-Type Pills */
+.v34-ex-thumb-card {
+  width: 68px !important;
+  height: 70px !important;
+  padding: 4px !important;
+  gap: 2px !important;
+}
+.v34-set-num-circle.set-type-w { background: rgba(245, 158, 11, 0.22) !important; color: #f59e0b !important; border: 1px solid rgba(245, 158, 11, 0.55) !important; }
+.v34-set-num-circle.set-type-d { background: rgba(168, 85, 247, 0.22) !important; color: #c084fc !important; border: 1px solid rgba(168, 85, 247, 0.55) !important; }
+.v34-set-num-circle.set-type-f { background: rgba(239, 68, 68, 0.22) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.55) !important; }
+
+/* RE:MK v35.6 – Bugfixes: Runde Satz-Typ-Kreise & Pin/Haken kollisionsfrei */
+#remk-v34-fitness-clean-panel button.v34-set-num-circle {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  border-radius: 50% !important;
+  font-size: 0.8rem !important;
+  font-weight: 800 !important;
+  padding: 0 !important;
+  background: var(--v34-input-bg);
+  color: var(--v34-text);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+}
+#remk-v34-fitness-clean-panel .v34-set-row.done-row button.v34-set-num-circle:not(.set-type-w):not(.set-type-d):not(.set-type-f) {
+  background: #10b981 !important;
+  color: #ffffff !important;
+}
+.v352-thumb-pin-badge {
+  top: 2px !important;
+  left: 3px !important;
+  right: auto !important;
+  z-index: 3 !important;
+}
+.v34-ex-thumb-card.done::after {
+  top: 2px !important;
+  right: 3px !important;
+  z-index: 3 !important;
+}
+
+/* ============================================================================
+   RE:MK v35.9 – COCKPIT LIGHT-MODE FIX (#v202-cockpit-expert-pal-wrap) & MENÜ
+   ============================================================================ */
+#remk-home-pane-cockpit #v202-cockpit-expert-pal-wrap,
+#remk-home-pane-cockpit #remk-v234-cockpit-kids-box {
+  background: var(--v34-card-soft) !important;
+  border: 1px solid var(--v34-border) !important;
+  color: var(--v34-text) !important;
+  border-radius: 16px !important;
+}
+#remk-home-pane-cockpit #v202-cockpit-expert-pal-wrap label,
+#remk-home-pane-cockpit #v202-cockpit-expert-pal-wrap span,
+#remk-home-pane-cockpit #remk-v234-cockpit-kids-box label,
+#remk-home-pane-cockpit #remk-v234-cockpit-kids-box span {
+  color: var(--v34-text) !important;
+}
+body.remk-light-mode #remk-home-pane-cockpit #v202-cockpit-expert-pal-wrap span[style*="color:#94a3b8"],
+body:not(.remk-v34-dark) #remk-home-pane-cockpit #v202-cockpit-expert-pal-wrap span[style*="color:#94a3b8"] {
+  color: var(--v34-muted) !important;
+}
+#remk-top-menu-drawer .hub-title {
+  line-height: 1.25 !important;
+}
