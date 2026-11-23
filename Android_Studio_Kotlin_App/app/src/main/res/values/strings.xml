@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RE:MK Coaching</string>
+    <string name="shortcut_workout">🏋️ Training sofort starten</string>
+    <string name="shortcut_shopping">🛒 Reine Einkaufsliste</string>
+    <string name="shortcut_maps">🗺️ GPS-Maps Tracker</string>
+</resources>
