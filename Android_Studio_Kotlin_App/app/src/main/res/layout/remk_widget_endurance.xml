@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/remk_widget_bg"
+    android:padding="11dp">
+
+    <!-- 1. TOP EINKAUFSLISTEN-HEADER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/remk_w_note_box_bg"
+        android:padding="9dp"
+        android:layout_marginBottom="6dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/w_endurance_kpi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🛒 LIVE-EINKAUFSLISTE (1/1)"
+                android:textColor="#FF5E00"
+                android:textSize="11.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/w_endurance_last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Antippen = ✓ • Ohne App-Start ergänzen"
+                android:textColor="@color/remk_w_text_muted"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btn_w_run"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/remk_w_popup_btn_bg"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="↗ Liste"
+            android:textColor="#FF5E00"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 2. 3 BLÄTTERBARE ARTIKEL-ZEILEN -->
+    <TextView
+        android:id="@+id/btn_shop_item_0"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/remk_w_row_active_bg"
+        android:gravity="start|center_vertical"
+        android:paddingStart="11dp"
+        android:paddingEnd="11dp"
+        android:text="☐ 1,2 kg Geflügelbrustfilet"
+        android:textColor="@color/remk_w_text_primary"
+        android:textSize="12.5sp"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/btn_shop_item_1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/remk_w_row_inactive_bg"
+        android:gravity="start|center_vertical"
+        android:paddingStart="11dp"
+        android:paddingEnd="11dp"
+        android:text="☐ 1,5 kg Magerquark / Skyr"
+        android:textColor="@color/remk_w_text_secondary"
+        android:textSize="12.5sp"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/btn_shop_item_2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/remk_w_row_inactive_bg"
+        android:gravity="start|center_vertical"
+        android:paddingStart="11dp"
+        android:paddingEnd="11dp"
+        android:text="☐ 750 g Basmatireis &amp; Haferflocken"
+        android:textColor="@color/remk_w_text_secondary"
+        android:textSize="12.5sp"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="end" />
+
+    <!-- 3. BLÄTTERN + DIREKT-EINGABE (TEXT / SPRACHE / SCAN) OHNE HAUPT-APP -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_shop_prev"
+            android:layout_width="36dp"
+            android:layout_height="34dp"
+            android:background="@drawable/remk_w_pill_slate"
+            android:gravity="center"
+            android:text="◀"
+            android:textColor="@color/remk_w_text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_shop_add_text"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/remk_w_pill_green"
+            android:gravity="center"
+            android:text="✏️ +Text"
+            android:textColor="#10B981"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_shop_add_voice"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/remk_w_pill_blue"
+            android:gravity="center"
+            android:text="🎤 Sprache"
+            android:textColor="@color/remk_w_blue"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_shop_add_scan"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:layout_weight="0.9"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/remk_w_popup_btn_bg"
+            android:gravity="center"
+            android:text="📷 Scan"
+            android:textColor="#FF5E00"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_shop_next"
+            android:layout_width="36dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/remk_w_pill_slate"
+            android:gravity="center"
+            android:text="▶"
+            android:textColor="@color/remk_w_text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

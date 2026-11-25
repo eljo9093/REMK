@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="remk_w_bg">#090D14</color>
+    <color name="remk_w_border">#1E3A5F</color>
+    <color name="remk_w_card_soft">#111824</color>
+    <color name="remk_w_card_inner">#162030</color>
+    <color name="remk_w_text_primary">#F8FAFC</color>
+    <color name="remk_w_text_secondary">#CBD5E1</color>
+    <color name="remk_w_text_muted">#94A3B8</color>
+    <color name="remk_w_accent">#FF5E00</color>
+    <color name="remk_w_accent_soft">#2B1509</color>
+    <color name="remk_w_green">#10B981</color>
+    <color name="remk_w_green_soft">#0B2922</color>
+    <color name="remk_w_blue">#38BDF8</color>
+    <color name="remk_w_blue_soft">#0E2439</color>
+    <color name="remk_w_pill_bg">#162030</color>
+    <color name="remk_w_pill_border">#1E3A5F</color>
+</resources>

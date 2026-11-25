@@ -1,0 +1,107 @@
+{
+  "version": "2026.11",
+  "updatedAt": "2026-11-20",
+  "sources": [
+    "ISSN Protein & Timing Position Stand",
+    "ACSM Strength & Conditioning Guidelines",
+    "RP Hypertrophy Volume Landmarks (MEV/MAV/MRV)",
+    "Gabbett ACWR Workload Management",
+    "FIFA 11+ & Nordic Hamstring Injury Prevention"
+  ],
+  "bodyweightFactors": {
+    "pullup_dip": 0.95,
+    "pistol_single_leg": 0.85,
+    "pushup_flat": 0.65,
+    "bw_squat_lunge": 0.65,
+    "inverted_row": 0.6,
+    "core_iso": 0.0
+  },
+  "recoveryBaseHours": {
+    "chest": 54,
+    "upper_back": 54,
+    "lats": 54,
+    "lower_back": 64,
+    "quads": 66,
+    "hamstrings": 64,
+    "glutes": 60,
+    "shoulders_front": 44,
+    "shoulders_side": 40,
+    "shoulders_rear": 42,
+    "biceps": 40,
+    "triceps": 42,
+    "forearms": 36,
+    "traps": 44,
+    "abs": 36,
+    "obliques": 36,
+    "calves": 40
+  },
+  "acwr": {
+    "lowMax": 0.78,
+    "sweetMin": 0.8,
+    "sweetMax": 1.35,
+    "highAlert": 1.45
+  },
+  "nutritionCycling": {
+    "trainingDayKcalMult": 1.1,
+    "trainingDayCarbMult": 1.2,
+    "matchDayKcalMult": 1.16,
+    "matchDayCarbMult": 1.32,
+    "restDayKcalMult": 0.9,
+    "restDayCarbMult": 0.78,
+    "sickTravelKcalMult": 1.0,
+    "sickExtraWaterL": 0.5,
+    "leucineMinProtG": 25
+  },
+  "matchdayPeriodization": {
+    "MD-4": {
+      "label": "Kraft & Explosivität (MD-4)",
+      "volMult": 1.0,
+      "intMult": 0.95,
+      "focus": "Kraft, Sprints & Richtungswechsel (COD)"
+    },
+    "MD-3": {
+      "label": "Hohe Intensität & Schnelligkeit (MD-3)",
+      "volMult": 0.9,
+      "intMult": 0.95,
+      "focus": "Kurz-Sprints, Sprünge & Core-Stabilität"
+    },
+    "MD-2": {
+      "label": "Tapering & Spritzigkeit (MD-2)",
+      "volMult": 0.65,
+      "intMult": 0.85,
+      "focus": "Geringes Volumen, explosive Kontakte, 0% Muskelkater"
+    },
+    "MD-1": {
+      "label": "Aktivierung & Neuromuskulär (MD-1)",
+      "volMult": 0.4,
+      "intMult": 0.75,
+      "focus": "Kurze Antritte, Mobility, Reaktions-Drills"
+    },
+    "MD": {
+      "label": "Spieltag / Wettkampf (MD)",
+      "volMult": 0.25,
+      "intMult": 0.7,
+      "focus": "RAMP Warm-Up, Carb-Loading & Elektrolyte"
+    },
+    "MD+1": {
+      "label": "Aktive Regeneration (MD+1)",
+      "volMult": 0.35,
+      "intMult": 0.55,
+      "focus": "Durchblutung, leichtes Stretching & Schlaf"
+    },
+    "MD+2": {
+      "label": "Wiedereinstieg & Prävention (MD+2)",
+      "volMult": 0.75,
+      "intMult": 0.8,
+      "focus": "FIFA 11+, Rumpf, Oberkörper & Technik"
+    }
+  },
+  "explainers": {
+    "acwr": "ACWR vergleicht deine Belastung der letzten 7 Tage mit deinem 4-Wochen-Schnitt. Zwischen 0,80 und 1,35 wächst du optimal bei minimalem Verletzungsrisiko.",
+    "mev_mrv": "MEV = Mindest-Sätze für Muskelaufbau · MAV = optimaler Bereich · MRV = Erholungsgrenze. Darüber hinaus wächst du nicht schneller, sondern ermüdest nur stärker.",
+    "sfr": "SFR (Stimulus-to-Fatigue-Ratio) misst, wie viel Muskelreiz (Pump) eine Übung im Verhältnis zur Gelenkbelastung liefert. Top-SFR-Übungen bevorzugt RE:MK für dich.",
+    "dots": "Relativkraft (DOTS) setzt deine bewegten Gewichte ins Verhältnis zu deinem Körpergewicht und Geschlecht – so vergleichst du deine echte Leistungsfähigkeit fair.",
+    "bw_load": "Bei Eigengewichtsübungen rechnet RE:MK automatisch deinen realen Körpergewichts-Anteil (z. B. 95% bei Klimmzügen, 65% bei Liegestützen) plus Zusatz- oder Minus-Assistgewicht ein.",
+    "cycling": "Tagestyp-Cycling verteilt mehr Kohlenhydrate auf Trainings- & Spieltage und etwas weniger auf Ruhetage – bei konstantem Protein und exakt gleichem Wochenschnitt."
+  }
+}
