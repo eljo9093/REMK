@@ -1,0 +1,50 @@
+name: Build REMK Smartphone APK v37.27 Secure
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-phone-apk:
+    name: Build REMK Smartphone APK (:app R8 Hardened Fixed-Sign v37.27)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle 8.5
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Prepare and Compile Smartphone APK (:app)
+        shell: bash
+        run: |
+          APP_FILE=$(find . -name "build.gradle.kts" | grep "/app/" | head -n 1)
+          if [ -n "$APP_FILE" ]; then
+            cd "$(dirname "$(dirname "$APP_FILE")")"
+          fi
+          python3 -c 'import base64; open("app/remk_phone_fixed.jks", "wb").write(base64.b64decode("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"))'
+          python3 -c 'q, nl = chr(34), chr(10); s = "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" + nl + "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" + nl + "rootProject.name = " + q + "REMK_Coaching_App" + q + nl + "include(" + q + ":app" + q + ")" + nl; open("settings.gradle.kts", "w", encoding="utf-8").write(s)'
+          python3 -c 'import os, base64; q = chr(34); os.makedirs("app/src/main/res/drawable", exist_ok=True); h = open("app/src/main/assets/index.html", encoding="utf-8").read() if os.path.exists("app/src/main/assets/index.html") else ""; tag = "base64,"; idx = h.find(tag); b64 = h[idx+7:h.find(q, idx+7)] if idx != -1 else ""; b64 and open("app/src/main/res/drawable/ic_launcher.png", "wb").write(base64.b64decode(b64))'
+          python3 -c 'import os, re; p = "app/src/main/assets/rezepte_teil4.js"; os.path.exists(p) and open(p, "w", encoding="utf-8").write(re.sub(r"\];\s*\];", "];", open(p, encoding="utf-8").read()))'
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          gradle :app:assembleDebug --no-daemon
+          mkdir -p "$GITHUB_WORKSPACE/phone_apk_out"
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/phone_apk_out/REMK-Smartphone-App-v37-27-BetaFinal.apk"
+
+      - name: Upload Smartphone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: REMK-Smartphone-App-APK-v37-27-BetaFinal
+          path: phone_apk_out/REMK-Smartphone-App-v37-27-BetaFinal.apk
