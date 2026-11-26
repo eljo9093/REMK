@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Internet, Kamera/Barcode, Vibration, Display-Wachhalter & Sperrbildschirm-Vollbild -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- GPS & Maps Outdoor-Tracking (Laufen, Radfahren, Vereins-Runden) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Smartwatch Push-Benachrichtigungen, Herzfrequenz (BLE) & Hardware-Schrittzähler -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="remk" android:host="app" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <!-- WIDGET 1: 🍎 ERNÄHRUNG, YAZIO-SLOTS, REZEPT & WASSER + ZENTRALER ACTION-RECEIVER -->
+        <receiver
+            android:name=".RemkWidgetProvider"
+            android:exported="true"
+            android:label="RE:MK 1. Ernährung, Rezept &amp; Makro-Radar">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="eu.remk.coaching.ACTION_ADD_WATER_250" />
+                <action android:name="eu.remk.coaching.ACTION_TOGGLE_MEAL_SLOT" />
+                <action android:name="eu.remk.coaching.ACTION_TOGGLE_SHOP_ITEM" />
+                <action android:name="eu.remk.coaching.ACTION_SHOP_PAGE_STEP" />
+                <action android:name="eu.remk.coaching.ACTION_OPEN_LOCKSCREEN_QUICK" />
+                <action android:name="eu.remk.coaching.ACTION_WORKOUT_STEP_WEIGHT" />
+                <action android:name="eu.remk.coaching.ACTION_WORKOUT_STEP_REPS" />
+                <action android:name="eu.remk.coaching.ACTION_WORKOUT_COMPLETE_SET" />
+                <action android:name="eu.remk.coaching.ACTION_STARTER_WEIGHT_HELP" />
+                <action android:name="eu.remk.coaching.ACTION_TOGGLE_COACH_MUTE" />
+                <action android:name="eu.remk.coaching.ACTION_START_TIMER_90" />
+                <action android:name="eu.remk.coaching.ACTION_WATCH_COMPLETE_SET" />
+                <action android:name="eu.remk.coaching.ACTION_WATCH_LOG_CUSTOM_SET" />
+                <action android:name="eu.remk.coaching.ACTION_WATCH_ADD_REST_30" />
+                <action android:name="eu.remk.coaching.ACTION_WEAR_SYNC_EVENT" />
+                <action android:name="eu.remk.coaching.ACTION_COCKPIT_ROTATE_BODY" />
+                <action android:name="eu.remk.coaching.ACTION_COCKPIT_TOGGLE_VIEW" />
+                <action android:name="eu.remk.coaching.ACTION_COCKPIT_TOGGLE_QUEST" />
+                <action android:name="eu.remk.coaching.ACTION_WORKOUT_SWITCH_EX" />
+                <action android:name="eu.remk.coaching.ACTION_NATIVE_REST_DONE" />
+                <action android:name="eu.remk.coaching.ACTION_REFRESH_WIDGETS" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remk_widget_info" />
+        </receiver>
+
+        <!-- WIDGET 2: 🏋️ LIVE-WORKOUT & SCREENSHOT-COCKPIT (NOTIZ, STARTGEWICHT-HILFE & 3 SATZ-ZEILEN) -->
+        <receiver
+            android:name=".RemkWorkoutWidgetProvider"
+            android:exported="true"
+            android:label="RE:MK 2. Live-Training &amp; Satz-Cockpit">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remk_widget_workout_info" />
+        </receiver>
+
+        <!-- WIDGET 3: 🛒 INTERAKTIVE EINKAUFSLISTE & GPS-START -->
+        <receiver
+            android:name=".RemkEnduranceWidgetProvider"
+            android:exported="true"
+            android:label="RE:MK 3. Interaktive Einkaufsliste &amp; GPS">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remk_widget_endurance_info" />
+        </receiver>
+
+        <!-- WIDGET 4: ❤️ VITAL, SCHRITTE, COACH AN/AUS & TIMER -->
+        <receiver
+            android:name=".RemkHealthWidgetProvider"
+            android:exported="true"
+            android:label="RE:MK 4. Vital, Schritte &amp; Coach-Control">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remk_widget_health_info" />
+        </receiver>
+    
+        
+        <!-- v36.5: Transparentes natives Mini-Popup für direkte Widget-/Lockscreen-Eingaben (OHNE WebView) -->
+        <activity
+            android:name=".RemkQuickInputActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <!-- v36.5: Nativer Sperrbildschirm-Modus für jeden Bereich (auch bei geschlossener App) -->
+        <activity
+            android:name=".RemkLockscreenActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true" />
+
+        <service
+            android:name=".RemkLockscreenService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Displays user-scheduled shopping list or workout checklist directly over lockscreen" />
+        </service>
+
+        <receiver
+            android:name=".RemkLockscreenReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="eu.remk.coaching.ACTION_LOCK_ROUTINE_START" />
+                <action android:name="eu.remk.coaching.ACTION_LOCK_ROUTINE_STOP" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".RemkBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- WIDGET 5 (NEU v36.5): 🏆 VOLLBILD-COCKPIT (4x5 / GANZE SEITE) -->
+        <receiver
+            android:name=".RemkCockpitWidgetProvider"
+            android:exported="true"
+            android:label="RE:MK 5. Vollbild-Cockpit &amp; Level-Status">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remk_widget_cockpit_info" />
+        </receiver>
+
+        <!-- WIDGET 6 (NEU v37.9): 📅 WOCHEN- & TAGES-KALENDER -->
+        <receiver
+            android:name=".RemkCalendarWidgetProvider"
+            android:exported="true"
+            android:label="RE:MK 6. Trainings-Kalender &amp; Wochenplan">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remk_widget_calendar_info" />
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>
